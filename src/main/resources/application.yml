@@ -29,3 +29,7 @@ spring:
 
 server:
   port: 9564
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
