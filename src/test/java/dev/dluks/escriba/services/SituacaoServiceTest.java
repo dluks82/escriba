@@ -2,6 +2,7 @@ package dev.dluks.escriba.services;
 
 import dev.dluks.escriba.domain.entities.Situacao;
 import dev.dluks.escriba.domain.exceptions.DuplicateResourceException;
+import dev.dluks.escriba.domain.exceptions.ResourceNotFoundException;
 import dev.dluks.escriba.domain.repositories.SituacaoRepository;
 import dev.dluks.escriba.dtos.CreateSituacaoRequest;
 import dev.dluks.escriba.dtos.SituacaoMinDTO;
@@ -39,6 +40,7 @@ class SituacaoServiceTest {
 
     private CreateSituacaoRequest dtoCreate;
     private UpdateSituacaoRequest dtoUpdate;
+    private UpdateSituacaoRequest dtoUpdateSame;
     private Situacao situacao;
 
     @BeforeEach
@@ -49,6 +51,8 @@ class SituacaoServiceTest {
                 .build();
 
         dtoUpdate = new UpdateSituacaoRequest("Teste");
+
+        dtoUpdateSame = new UpdateSituacaoRequest("Test");
 
         situacao = Situacao.builder()
                 .id("SIT_TEST")
@@ -69,6 +73,28 @@ class SituacaoServiceTest {
         assertEquals(dtoCreate.getId(), result.getId());
         assertEquals(dtoCreate.getNome(), result.getNome());
         verify(repository).save(any(Situacao.class));
+    }
+
+    @Test
+    @DisplayName("Deve buscar situação por id")
+    void shouldFindSituacaoById() {
+        when(repository.findById(dtoCreate.getId())).thenReturn(Optional.of(situacao));
+
+        Situacao result = service.findById(dtoCreate.getId());
+
+        assertNotNull(result);
+        assertEquals(situacao, result);
+        verify(repository).findById(dtoCreate.getId());
+    }
+
+    @Test
+    @DisplayName("Deve falhar ao buscar situação por id")
+    void shouldFailToFindSituacaoById() {
+        when(repository.findById(dtoCreate.getId())).thenReturn(Optional.empty());
+
+        String id = dtoCreate.getId();
+        assertThrows(ResourceNotFoundException.class, () -> service.findById(id));
+        verify(repository).findById(dtoCreate.getId());
     }
 
     @Test
@@ -104,6 +130,21 @@ class SituacaoServiceTest {
         when(repository.save(any(Situacao.class))).thenReturn(situacao);
 
         Situacao result = service.update(dtoCreate.getId(), dtoUpdate);
+
+        assertNotNull(result);
+        assertEquals(dtoCreate.getNome(), result.getNome());
+        verify(repository).save(any(Situacao.class));
+    }
+
+    @Test
+    @DisplayName("Deve atualizar situação com nome igual ao original")
+    void shouldUpdateSituacaoWithSameNome() {
+        when(repository.findById(dtoCreate.getId())).thenReturn(Optional.of(situacao));
+        when(repository.save(any(Situacao.class))).thenReturn(situacao);
+
+        Situacao result = service.update(dtoCreate.getId(), dtoUpdateSame);
+
+        System.out.println(result);
 
         assertNotNull(result);
         assertEquals(dtoCreate.getNome(), result.getNome());
