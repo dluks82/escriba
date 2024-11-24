@@ -17,6 +17,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -141,13 +145,19 @@ class AtribuicaoServiceTest {
     }
 
     @Test
-    @DisplayName("Deve listar atribuições com situação true")
-    void shouldListAtribuicoesWithSituacaoTrue() {
-        when(repository.findBySituacaoTrue()).thenReturn(List.of(atribuicao));
+    @DisplayName("Deve listar todas as atribuições paginado")
+    void shouldListAllAtribuicoesPaginated() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Atribuicao> page = new PageImpl<>(List.of(atribuicao));
 
-        List<AtribuicaoResponseMin> resultado = service.findAvailable();
+        when(repository.findAll(pageable)).thenReturn(page);
 
-        assertFalse(resultado.isEmpty());
+        Page<AtribuicaoResponseMin> result = service.findAll(pageable);
+
+        assertNotNull(result);
+        assertFalse(result.getContent().isEmpty());
+        assertEquals(1, result.getContent().size());
+        verify(repository).findAll(pageable);
     }
 
     @Test
