@@ -47,6 +47,8 @@ class AtribuicaoServiceTest {
     private Atribuicao atribuicao;
     private Atribuicao atribuicaoWithSituacaoFalse;
 
+    private AtribuicaoResponse atribuicaoResponse;
+
     @BeforeEach
     void setup() {
         dtoCreate = CreateAtribuicaoRequest.builder()
@@ -79,6 +81,8 @@ class AtribuicaoServiceTest {
                 .nome("Test")
                 .situacao(false)
                 .build();
+
+        atribuicaoResponse = AtribuicaoResponse.fromEntity(atribuicao);
 
     }
 
