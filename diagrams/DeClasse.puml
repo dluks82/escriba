@@ -1,0 +1,54 @@
+@startuml
+package dev.dluks.escriba.entities {
+
+    class Atribuicao {
+        - id : String
+        - nome : String
+        - situacao : boolean
+        --
+        + Atribuicao(String id, String nome, Boolean situacao)
+        + isDisponivel() : boolean
+        + ativar()
+        + desativar()
+        --
+        - validarId(String id)
+        - validarNome(String nome)
+        + equals(Object o) : boolean
+        + hashCode() : int
+        + toString() : String
+    }
+
+    class Cartorio {
+        - id : Integer
+        - nome : String
+        - observacao : String
+        - situacao : Situacao
+        - atribuicoes : Set<Atribuicao>
+        --
+        + Cartorio(Integer id, String nome, String observacao, Situacao situacao)
+        + adicionarAtribuicao(Atribuicao atribuicao)
+        + removerAtribuicao(Atribuicao atribuicao)
+        --
+        - validarCamposObrigatorios(Integer id, String nome, Situacao situacao)
+        - validarTamanhoNome(String nome)
+        + equals(Object o) : boolean
+        + hashCode() : int
+    }
+
+    class Situacao {
+        - id : String
+        - nome : String
+        --
+        + Situacao(String id, String nome)
+        --
+        - validarId(String id)
+        - validarNome(String nome)
+        + equals(Object o) : boolean
+        + hashCode() : int
+        + toString() : String
+    }
+
+    Cartorio "1" --> "1" Situacao : situacao
+    Cartorio "1" -- "*" Atribuicao : atribuicoes
+}
+@enduml
