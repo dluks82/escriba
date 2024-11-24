@@ -21,4 +21,5 @@ public class CreateSituacaoRequest {
     @NotBlank(message = "O nome é obrigatório")
     @Size(max = 50, message = "O nome deve ter no máximo 50 caracteres")
     private String nome;
+
 }

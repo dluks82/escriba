@@ -43,8 +43,6 @@ class SituacaoServiceTest {
     private UpdateSituacaoRequest dtoUpdate;
     private UpdateSituacaoRequest dtoUpdateSame;
     private Situacao situacao;
-    private SituacaoResponse situacaoResponse;
-    private SituacaoResponseMin situacaoResponseMin;
 
     @BeforeEach
     void setup() {
@@ -65,16 +63,13 @@ class SituacaoServiceTest {
                 .id("SIT_TEST")
                 .nome("Test")
                 .build();
-
-        situacaoResponse = SituacaoResponse.fromEntity(situacao);
-        situacaoResponseMin = SituacaoResponseMin.fromEntity(situacao);
     }
 
     @Test
     @DisplayName("Deve criar uma situação")
     void shouldCreateSituacao() {
         when(repository.existsById(dtoCreate.getId())).thenReturn(false);
-        when(repository.existsByNomeIgnoreCase(dtoCreate.getNome())).thenReturn(false);
+        when(repository.findByNomeIgnoreCase(dtoCreate.getNome())).thenReturn(Optional.empty());
         when(repository.save(any(Situacao.class))).thenReturn(situacao);
 
         SituacaoResponse result = service.create(dtoCreate);
