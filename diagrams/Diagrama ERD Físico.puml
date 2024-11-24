@@ -1,0 +1,49 @@
+@startuml
+
+!define Table(name,desc) class name as "desc" << (T,#FFAAAA) >>
+!define primary_key(x) <b><u>x</u></b>
+!define foreign_key(x) <i>x</i>
+
+hide methods
+hide stereotypes
+
+Table(situacoes, "SITUACOES") {
+    primary_key(id): VARCHAR(20)
+    --
+    nome: VARCHAR(50) NOT NULL
+    ..
+    UK1: nome
+}
+
+Table(atribuicoes, "ATRIBUICOES") {
+    primary_key(id): VARCHAR(20)
+    --
+    nome: VARCHAR(50) NOT NULL
+    situacao: BOOLEAN NOT NULL DEFAULT TRUE
+    ..
+    UK1: nome
+}
+
+Table(cartorios, "CARTORIOS") {
+    primary_key(id): INT
+    --
+    nome: VARCHAR(150) NOT NULL
+    observacao: VARCHAR(250) NULL
+    foreign_key(situacao_id): VARCHAR(20) NOT NULL
+    ..
+    FK1: situacao_id > SITUACOES.id
+}
+
+Table(cartorios_atribuicoes, "CARTORIOS_ATRIBUICOES") {
+    primary_key(cartorio_id): INT
+    primary_key(atribuicao_id): VARCHAR(20)
+    ..
+    FK1: cartorio_id > CARTORIOS.id
+    FK2: atribuicao_id > ATRIBUICOES.id
+}
+
+cartorios }--|| situacoes
+cartorios ||--o{ cartorios_atribuicoes
+atribuicoes ||--o{ cartorios_atribuicoes
+
+@enduml
