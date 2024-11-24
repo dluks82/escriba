@@ -65,11 +65,11 @@ public class Atribuicao {
         return situacao;
     }
 
-    public void ativar() {
+    public void activate() {
         this.situacao = true;
     }
 
-    public void desativar() {
+    public void deactivate() {
         this.situacao = false;
     }
 

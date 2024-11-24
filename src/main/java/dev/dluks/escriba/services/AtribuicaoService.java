@@ -67,9 +67,9 @@ public class AtribuicaoService {
         Atribuicao atribuicao = findOrFail(id);
 
         if (situacao) {
-            atribuicao.ativar();
+            atribuicao.activate();
         } else {
-            atribuicao.desativar();
+            atribuicao.deactivate();
         }
 
         return AtribuicaoResponse.fromEntity(repository.save(atribuicao));
