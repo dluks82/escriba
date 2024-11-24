@@ -150,4 +150,15 @@ class SituacaoControllerTest {
         ));
     }
 
+    @Test
+    @DisplayName("Deve apagar situação")
+    void shouldDeleteSituacao() throws Exception {
+        String id = "SIT_TESTE";
+
+        mockMvc.perform(delete("/api/v1/situacoes/{id}", id))
+                .andExpect(status().isNoContent());
+
+        verify(service).delete(id);
+    }
+
 }
