@@ -4,9 +4,10 @@ import dev.dluks.escriba.domain.entities.Situacao;
 import dev.dluks.escriba.domain.exceptions.DuplicateResourceException;
 import dev.dluks.escriba.domain.exceptions.ResourceNotFoundException;
 import dev.dluks.escriba.domain.repositories.SituacaoRepository;
-import dev.dluks.escriba.dtos.CreateSituacaoRequest;
-import dev.dluks.escriba.dtos.SituacaoMinDTO;
-import dev.dluks.escriba.dtos.UpdateSituacaoRequest;
+import dev.dluks.escriba.dtos.situacao.CreateSituacaoRequest;
+import dev.dluks.escriba.dtos.situacao.SituacaoResponse;
+import dev.dluks.escriba.dtos.situacao.SituacaoResponseMin;
+import dev.dluks.escriba.dtos.situacao.UpdateSituacaoRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,8 @@ class SituacaoServiceTest {
     private UpdateSituacaoRequest dtoUpdate;
     private UpdateSituacaoRequest dtoUpdateSame;
     private Situacao situacao;
+    private SituacaoResponse situacaoResponse;
+    private SituacaoResponseMin situacaoResponseMin;
 
     @BeforeEach
     void setup() {
@@ -50,14 +53,21 @@ class SituacaoServiceTest {
                 .nome("Test")
                 .build();
 
-        dtoUpdate = new UpdateSituacaoRequest("Teste");
+        dtoUpdate = UpdateSituacaoRequest.builder()
+                .nome("Teste")
+                .build();
 
-        dtoUpdateSame = new UpdateSituacaoRequest("Test");
+        dtoUpdateSame = UpdateSituacaoRequest.builder()
+                .nome("Test")
+                .build();
 
         situacao = Situacao.builder()
                 .id("SIT_TEST")
                 .nome("Test")
                 .build();
+
+        situacaoResponse = SituacaoResponse.fromEntity(situacao);
+        situacaoResponseMin = SituacaoResponseMin.fromEntity(situacao);
     }
 
     @Test
@@ -67,7 +77,7 @@ class SituacaoServiceTest {
         when(repository.existsByNomeIgnoreCase(dtoCreate.getNome())).thenReturn(false);
         when(repository.save(any(Situacao.class))).thenReturn(situacao);
 
-        Situacao result = service.create(dtoCreate);
+        SituacaoResponse result = service.create(dtoCreate);
 
         assertNotNull(result);
         assertEquals(dtoCreate.getId(), result.getId());
@@ -80,10 +90,10 @@ class SituacaoServiceTest {
     void shouldFindSituacaoById() {
         when(repository.findById(dtoCreate.getId())).thenReturn(Optional.of(situacao));
 
-        Situacao result = service.findById(dtoCreate.getId());
+        SituacaoResponse result = service.findById(dtoCreate.getId());
 
         assertNotNull(result);
-        assertEquals(situacao, result);
+        assertEquals(dtoCreate.getId(), result.getId());
         verify(repository).findById(dtoCreate.getId());
     }
 
@@ -129,7 +139,7 @@ class SituacaoServiceTest {
         when(repository.findByNomeIgnoreCase(dtoCreate.getNome())).thenReturn(Optional.empty());
         when(repository.save(any(Situacao.class))).thenReturn(situacao);
 
-        Situacao result = service.update(dtoCreate.getId(), dtoUpdate);
+        SituacaoResponse result = service.update(dtoCreate.getId(), dtoUpdate);
 
         assertNotNull(result);
         assertEquals(dtoCreate.getNome(), result.getNome());
@@ -142,9 +152,7 @@ class SituacaoServiceTest {
         when(repository.findById(dtoCreate.getId())).thenReturn(Optional.of(situacao));
         when(repository.save(any(Situacao.class))).thenReturn(situacao);
 
-        Situacao result = service.update(dtoCreate.getId(), dtoUpdateSame);
-
-        System.out.println(result);
+        SituacaoResponse result = service.update(dtoCreate.getId(), dtoUpdateSame);
 
         assertNotNull(result);
         assertEquals(dtoCreate.getNome(), result.getNome());
@@ -159,7 +167,7 @@ class SituacaoServiceTest {
 
         when(repository.findAll(pageable)).thenReturn(page);
 
-        Page<SituacaoMinDTO> result = service.listAll(pageable);
+        Page<SituacaoResponseMin> result = service.listAll(pageable);
 
         assertNotNull(result);
         assertFalse(result.getContent().isEmpty());

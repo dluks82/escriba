@@ -4,9 +4,10 @@ import dev.dluks.escriba.domain.entities.Situacao;
 import dev.dluks.escriba.domain.exceptions.DuplicateResourceException;
 import dev.dluks.escriba.domain.exceptions.ResourceNotFoundException;
 import dev.dluks.escriba.domain.repositories.SituacaoRepository;
-import dev.dluks.escriba.dtos.CreateSituacaoRequest;
-import dev.dluks.escriba.dtos.SituacaoMinDTO;
-import dev.dluks.escriba.dtos.UpdateSituacaoRequest;
+import dev.dluks.escriba.dtos.situacao.CreateSituacaoRequest;
+import dev.dluks.escriba.dtos.situacao.SituacaoResponseMin;
+import dev.dluks.escriba.dtos.situacao.SituacaoResponse;
+import dev.dluks.escriba.dtos.situacao.UpdateSituacaoRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,41 +23,46 @@ public class SituacaoService {
     private final SituacaoRepository repository;
 
     @Transactional
-    public Situacao create(CreateSituacaoRequest dto) {
+    public SituacaoResponse create(CreateSituacaoRequest dto) {
         validateDuplicateId(dto.getId());
         validateDuplicateNome(dto.getNome());
 
-        Situacao situacao = Situacao.builder()
-                .id(dto.getId())
-                .nome(dto.getNome())
-                .build();
+        Situacao situacao = repository.save(
+                Situacao.builder()
+                        .id(dto.getId())
+                        .nome(dto.getNome())
+                        .build()
+        );
 
-        return repository.save(situacao);
+        return SituacaoResponse.fromEntity(situacao);
     }
 
     @Transactional
-    public Situacao update(String id, UpdateSituacaoRequest dto) {
+    public SituacaoResponse update(String id, UpdateSituacaoRequest dto) {
         Situacao situacao = findByIdOrFail(id);
 
         if (!situacao.getNome().equalsIgnoreCase(dto.getNome())) {
             validateDuplicateNome(dto.getNome());
         }
 
-        Situacao situacaoAtualizada = Situacao.builder()
-                .id(id)
-                .nome(dto.getNome())
-                .build();
+        Situacao situacaoAtualizada = repository.save(
+                Situacao.builder()
+                        .id(id)
+                        .nome(dto.getNome())
+                        .build()
+        );
 
-        return repository.save(situacaoAtualizada);
+        return SituacaoResponse.fromEntity(situacaoAtualizada);
     }
 
     @Transactional(readOnly = true)
-    public Page<SituacaoMinDTO> listAll(Pageable pageable) {
-        return repository.findAll(pageable).map(this::toMinDTO);
+    public Page<SituacaoResponseMin> listAll(Pageable pageable) {
+        return repository.findAll(pageable).map(SituacaoResponseMin::fromEntity);
     }
 
-    public Situacao findById(String id) {
-        return findByIdOrFail(id);
+    public SituacaoResponse findById(String id) {
+
+        return SituacaoResponse.fromEntity(findByIdOrFail(id));
     }
 
     @Transactional
@@ -84,13 +90,6 @@ public class SituacaoService {
             );
         }
 
-    }
-
-    private SituacaoMinDTO toMinDTO(Situacao situacao) {
-        return SituacaoMinDTO.builder()
-                .id(situacao.getId())
-                .nome(situacao.getNome())
-                .build();
     }
 
 }
