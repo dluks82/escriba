@@ -48,15 +48,16 @@ public class Cartorio {
     private Set<Atribuicao> atribuicoes = new HashSet<>();
 
     @Builder
-    public Cartorio(Integer id, String nome, String observacao, Situacao situacao) {
-        validarCamposObrigatorios(id, nome, situacao);
+    public Cartorio(Integer id, String nome, String observacao, Situacao situacao, Set<Atribuicao> atribuicoes) {
+        validarCamposObrigatorios(id, nome, situacao, atribuicoes);
         this.id = id;
         this.nome = nome;
         this.observacao = observacao;
         this.situacao = situacao;
+        this.atribuicoes = new HashSet<>(atribuicoes);
     }
 
-    private void validarCamposObrigatorios(Integer id, String nome, Situacao situacao) {
+    private void validarCamposObrigatorios(Integer id, String nome, Situacao situacao, Set<Atribuicao> atribuicoes) {
         if (id == null || id <= 0) {
             throw new DomainException("ID é obrigatório e deve ser maior que zero");
         }
@@ -65,6 +66,9 @@ public class Cartorio {
         }
         if (situacao == null) {
             throw new DomainException("Situação é obrigatória");
+        }
+        if (atribuicoes == null || atribuicoes.isEmpty()) {
+            throw new DomainException("O cartório deve ter pelo menos uma atribuição");
         }
 
         validarTamanhoNome(nome);

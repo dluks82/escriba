@@ -5,6 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class CartorioTest {
@@ -34,9 +37,8 @@ class CartorioTest {
                 .nome("1º Cartório de Notas")
                 .observacao("Cartório mais antigo da cidade")
                 .situacao(situacaoAtiva)
+                .atribuicoes(new HashSet<>(Set.of(atribuicaoNotas)))
                 .build();
-
-        cartorio.adicionarAtribuicao(atribuicaoNotas);
 
         assertNotNull(cartorio);
         assertEquals(1, cartorio.getId());
@@ -54,9 +56,8 @@ class CartorioTest {
                 .id(1)
                 .nome("1º Cartório de Notas")
                 .situacao(situacaoAtiva)
+                .atribuicoes(new HashSet<>(Set.of(atribuicaoNotas)))
                 .build();
-
-        cartorio.adicionarAtribuicao(atribuicaoNotas);
 
         assertNull(cartorio.getObservacao());
         assertNotNull(cartorio);
@@ -65,32 +66,26 @@ class CartorioTest {
     @Test
     @DisplayName("Não deve criar cartório sem atribuição")
     void shouldNotCreateCartorioWithoutAtribuicao() {
-        Cartorio cartorio = Cartorio.builder()
+        Cartorio.CartorioBuilder builder = Cartorio.builder()
                 .id(1)
                 .nome("1º Cartório de Notas")
-                .situacao(situacaoAtiva)
-                .build();
+                .situacao(situacaoAtiva);
 
-        assertThrows(DomainException.class, () ->
-                cartorio.removerAtribuicao(atribuicaoNotas)
-        );
+        assertThrows(DomainException.class, builder::build);
     }
 
     @Test
     @DisplayName("Deve gerenciar atribuições")
     void shouldManageAtribuicoes() {
-        // Criar cartório
         Cartorio cartorio = Cartorio.builder()
                 .id(1)
                 .nome("1º Cartório de Notas")
                 .situacao(situacaoAtiva)
+                .atribuicoes(new HashSet<>(Set.of(atribuicaoNotas)))
                 .build();
 
-        // Adicionar primeira atribuição
-        cartorio.adicionarAtribuicao(atribuicaoNotas);
         assertEquals(1, cartorio.getAtribuicoes().size());
 
-        // Adicionar segunda atribuição
         Atribuicao atribuicaoProtesto = Atribuicao.builder()
                 .id("ATRIB_PROTESTO")
                 .nome("Tabelionato de Protesto")
@@ -99,11 +94,9 @@ class CartorioTest {
         cartorio.adicionarAtribuicao(atribuicaoProtesto);
         assertEquals(2, cartorio.getAtribuicoes().size());
 
-        // Remover uma atribuição (deve permitir pois ainda resta uma)
         cartorio.removerAtribuicao(atribuicaoProtesto);
         assertEquals(1, cartorio.getAtribuicoes().size());
 
-        // Tentar remover a última atribuição (deve falhar)
         assertThrows(DomainException.class, () ->
                 cartorio.removerAtribuicao(atribuicaoNotas)
         );
@@ -134,7 +127,8 @@ class CartorioTest {
         // Arrange
         Cartorio.CartorioBuilder baseBuilder = Cartorio.builder()
                 .id(1)
-                .situacao(situacaoAtiva);
+                .situacao(situacaoAtiva)
+                .atribuicoes(new HashSet<>(Set.of(atribuicaoNotas)));
 
         // Act & Assert
         assertAll(
@@ -161,6 +155,7 @@ class CartorioTest {
                 .id(1)
                 .nome("Cartório")
                 .situacao(situacaoAtiva)
+                .atribuicoes(new HashSet<>(Set.of(atribuicaoNotas)))
                 .build();
 
         assertThrows(DomainException.class, () ->
@@ -176,6 +171,7 @@ class CartorioTest {
                 .id(1)
                 .nome("Cartório")
                 .situacao(situacaoAtiva)
+                .atribuicoes(new HashSet<>(Set.of(atribuicaoNotas)))
                 .build();
 
         Atribuicao atribuicaoInativa = Atribuicao.builder()
