@@ -47,8 +47,6 @@ class AtribuicaoServiceTest {
     private Atribuicao atribuicao;
     private Atribuicao atribuicaoWithSituacaoFalse;
 
-    private AtribuicaoResponse atribuicaoResponse;
-
     @BeforeEach
     void setup() {
         dtoCreate = CreateAtribuicaoRequest.builder()
@@ -81,8 +79,6 @@ class AtribuicaoServiceTest {
                 .nome("Test")
                 .situacao(false)
                 .build();
-
-        atribuicaoResponse = AtribuicaoResponse.fromEntity(atribuicao);
 
     }
 
@@ -130,13 +126,23 @@ class AtribuicaoServiceTest {
     void shouldNotCreateAtribuicaoWithDuplicatedName() {
         when(repository.existsById(dtoCreate.getId())).thenReturn(false);
         when(repository.findByNomeIgnoreCase(dtoCreate.getNome())).thenReturn(Optional.of(atribuicao));
-        when(repository.existsById(dtoCreate.getId())).thenReturn(false);
-
-        when(repository.findByNomeIgnoreCase(dtoCreate.getNome()))
-                .thenReturn(Optional.of(atribuicao));
 
         assertThrows(DuplicateResourceException.class, () -> service
                 .create(dtoCreate));
+    }
+
+    @Test
+    @DisplayName("Deve buscar uma atribuição por id")
+    void shouldFindAtribuicaoById() {
+        String id = "ATRIB_TEST";
+        when(repository.findById(id)).thenReturn(Optional.of(atribuicao));
+
+        AtribuicaoResponse result = service.findById(id);
+
+        assertNotNull(result);
+        assertEquals(id, result.getId());
+        assertEquals(atribuicao.getNome(), result.getNome());
+        verify(repository).findById(id);
     }
 
     @Test
