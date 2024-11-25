@@ -11,6 +11,7 @@ import dev.dluks.escriba.dtos.cartorio.CreateCartorioRequest;
 import dev.dluks.escriba.dtos.cartorio.UpdateCartorioRequest;
 import dev.dluks.escriba.services.CartorioService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -97,7 +98,8 @@ class CartorioControllerTest {
     }
 
     @Test
-    void deveCreateCartorio() throws Exception {
+    @DisplayName("Deve criar um cartório")
+    void shouldCreateCartorio() throws Exception {
         when(service.create(any(CreateCartorioRequest.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/v1/cartorios")
@@ -109,7 +111,8 @@ class CartorioControllerTest {
     }
 
     @Test
-    void deveListarCartorios() throws Exception {
+    @DisplayName("Deve listar cartórios")
+    void shouldListCartorios() throws Exception {
         Page<CartorioResponseMin> page = new PageImpl<>(List.of(responseMin));
         when(service.listAll(any(Pageable.class))).thenReturn(page);
 
@@ -122,7 +125,8 @@ class CartorioControllerTest {
     }
 
     @Test
-    void deveBuscarCartorio() throws Exception {
+    @DisplayName("Deve buscar um cartório")
+    void shouldFindCartorio() throws Exception {
         when(service.findById(dto.getId())).thenReturn(response);
 
         mockMvc.perform(get("/api/v1/cartorios/{id}", dto.getId()))
@@ -132,7 +136,8 @@ class CartorioControllerTest {
     }
 
     @Test
-    void deveAtualizarCartorio() throws Exception {
+    @DisplayName("Deve atualizar um cartório")
+    void shouldUpdateCartorio() throws Exception {
         when(service.update(eq(dto.getId()), any(UpdateCartorioRequest.class))).thenReturn(response);
 
         mockMvc.perform(put("/api/v1/cartorios/{id}", dto.getId())
@@ -143,7 +148,8 @@ class CartorioControllerTest {
     }
 
     @Test
-    void deveRemoverCartorio() throws Exception {
+    @DisplayName("Deve remover um cartório")
+    void shouldDeleteCartorio() throws Exception {
         doNothing().when(service).delete(dto.getId());
 
         mockMvc.perform(delete("/api/v1/cartorios/{id}", dto.getId()))
@@ -151,7 +157,8 @@ class CartorioControllerTest {
     }
 
     @Test
-    void deveRetornar400QuandoDadosInvalidos() throws Exception {
+    @DisplayName("Deve retornar 400 quando tentar criar um cartório com dados inválidos")
+    void shouldReturn400WhenCreateCartorioWithInvalidData() throws Exception {
         CreateCartorioRequest dtoInvalido = CreateCartorioRequest.builder()
                 .id(-1) // ID inválido
                 .nome("") // Nome vazio

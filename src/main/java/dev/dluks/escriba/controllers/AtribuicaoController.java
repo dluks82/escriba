@@ -32,6 +32,7 @@ public class AtribuicaoController {
 
     @PostMapping
     @Operation(summary = "Criar atribuição",
+            description = "Cria uma nova atribuição",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Atribuição criada com sucesso"),
                     @ApiResponse(responseCode = "400", description = "Dados inválidos ou atribuição já existente")
@@ -62,6 +63,7 @@ public class AtribuicaoController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar atribuição",
+            description = "Retorna uma atribuição pelo ID",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Atribuição encontrada"),
                     @ApiResponse(responseCode = "404", description = "Atribuição não encontrada")
@@ -75,6 +77,7 @@ public class AtribuicaoController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar atribuição",
+            description = "Atualiza uma atribuição",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Atribuição atualizada"),
                     @ApiResponse(responseCode = "404", description = "Atribuição não encontrada"),
@@ -104,6 +107,7 @@ public class AtribuicaoController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Remover atribuição",
+            description = "Remove uma atribuição",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Atribuição removida"),
                     @ApiResponse(responseCode = "404", description = "Atribuição não encontrada"),
