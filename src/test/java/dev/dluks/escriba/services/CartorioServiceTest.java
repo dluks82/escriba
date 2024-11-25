@@ -57,6 +57,7 @@ class CartorioServiceTest {
     private Cartorio cartorio;
     private Cartorio cartorioUpdated;
     private Situacao situacao;
+    private Situacao situacaoInativo;
     private Atribuicao atribuicao;
 
     private SituacaoResponse situacaoResponse;
@@ -67,6 +68,11 @@ class CartorioServiceTest {
         situacao = Situacao.builder()
                 .id("SIT_ATIVO")
                 .nome("Ativo")
+                .build();
+
+        situacaoInativo = Situacao.builder()
+                .id("SIT_INATIVO")
+                .nome("Inativo")
                 .build();
 
         situacaoResponse = SituacaoResponse.fromEntity(situacao);
@@ -256,5 +262,18 @@ class CartorioServiceTest {
         Integer id = cartorio.getId();
 
         assertThrows(ResourceNotFoundException.class, () -> service.findById(id));
+    }
+
+    @Test
+    @DisplayName("Deve mudar a situacao do cartorio")
+    void shouldChangeCartorioSituacao() {
+        when(repository.findById(cartorio.getId())).thenReturn(Optional.of(cartorio));
+        when(situacaoService.findById(situacaoInativo.getId())).thenReturn(SituacaoResponse.fromEntity(situacaoInativo));
+        when(repository.save(any(Cartorio.class))).thenReturn(cartorio);
+
+        CartorioResponse resultado = service.changeSituacao(cartorio.getId(), situacaoInativo.getId());
+
+        assertNotNull(resultado);
+        assertEquals(situacaoInativo.getId(), resultado.getSituacao().getId());
     }
 }

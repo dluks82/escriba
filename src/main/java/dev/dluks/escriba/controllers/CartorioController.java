@@ -1,9 +1,11 @@
 package dev.dluks.escriba.controllers;
 
+import dev.dluks.escriba.dtos.atribuicao.AtribuicaoRequest;
 import dev.dluks.escriba.dtos.cartorio.CartorioResponse;
 import dev.dluks.escriba.dtos.cartorio.CartorioResponseMin;
 import dev.dluks.escriba.dtos.cartorio.CreateCartorioRequest;
 import dev.dluks.escriba.dtos.cartorio.UpdateCartorioRequest;
+import dev.dluks.escriba.dtos.situacao.SituacaoRequest;
 import dev.dluks.escriba.services.CartorioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -58,7 +60,6 @@ public class CartorioController {
         return service.listAll(pageable);
     }
 
-
     @Operation(
             summary = "Buscar cartório por ID",
             description = "Retorna um cartório pelo ID",
@@ -105,5 +106,53 @@ public class CartorioController {
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Adicionar atribuição",
+            description = "Adiciona uma atribuição ao cartório",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Atribuição adicionada com sucesso"),
+                    @ApiResponse(responseCode = "404", description = "Cartório ou atribuição não encontrada")
+            }
+    )
+    @PutMapping("/{id}/atribuicoes/add")
+    public ResponseEntity<CartorioResponse> addAtribuicao(
+            @PathVariable Integer id,
+            @Valid @RequestBody AtribuicaoRequest atribuicao
+    ) {
+        return ResponseEntity.ok(service.addAtribuicao(id, atribuicao.getId()));
+    }
+
+    @Operation(
+            summary = "Remover atribuição",
+            description = "Remove uma atribuição do cartório",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Atribuição removida com sucesso"),
+                    @ApiResponse(responseCode = "404", description = "Cartório ou atribuição não encontrada")
+            }
+    )
+    @PutMapping("/{id}/atribuicoes/remove")
+    public ResponseEntity<CartorioResponse> removeAtribuicao(
+            @PathVariable Integer id,
+            @Valid @RequestBody AtribuicaoRequest atribuicao
+    ) {
+        return ResponseEntity.ok(service.removeAtribuicao(id, atribuicao.getId()));
+    }
+
+    @Operation(
+            summary = "Atualizar situação",
+            description = "Atualiza a situação do cartório",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Situação atualizada com sucesso"),
+                    @ApiResponse(responseCode = "404", description = "Cartório ou situação não encontrada")
+            }
+    )
+    @PutMapping("/{id}/situacao")
+    public ResponseEntity<CartorioResponse> updateSituacao(
+            @PathVariable Integer id,
+            @Valid @RequestBody SituacaoRequest situacao
+    ) {
+        return ResponseEntity.ok(service.changeSituacao(id, situacao.getId()));
     }
 }

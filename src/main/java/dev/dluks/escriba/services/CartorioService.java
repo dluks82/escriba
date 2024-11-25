@@ -7,6 +7,7 @@ import dev.dluks.escriba.domain.exceptions.DuplicateResourceException;
 import dev.dluks.escriba.domain.exceptions.IntegrityConstraintException;
 import dev.dluks.escriba.domain.exceptions.ResourceNotFoundException;
 import dev.dluks.escriba.domain.repositories.CartorioRepository;
+import dev.dluks.escriba.dtos.atribuicao.AtribuicaoResponse;
 import dev.dluks.escriba.dtos.cartorio.CartorioResponse;
 import dev.dluks.escriba.dtos.cartorio.CartorioResponseMin;
 import dev.dluks.escriba.dtos.cartorio.CreateCartorioRequest;
@@ -61,10 +62,53 @@ public class CartorioService {
         return CartorioResponse.fromEntity(repository.save(cartorio));
     }
 
+    @Transactional
+    public CartorioResponse changeSituacao(Integer id, String situacaoId) {
+        Cartorio cartorio = findOrFail(id);
+        SituacaoResponse situacao = situacaoService.findById(situacaoId);
+
+        cartorio.changeSituacao(Situacao.builder()
+                .id(situacao.getId())
+                .nome(situacao.getNome())
+                .build());
+
+        return CartorioResponse.fromEntity(repository.save(cartorio));
+    }
+
+    @Transactional
+    public CartorioResponse addAtribuicao(Integer id, String atribuicaoId) {
+        Cartorio cartorio = findOrFail(id);
+        AtribuicaoResponse atribuicao = atribuicaoService.findById(atribuicaoId);
+
+        cartorio.adicionarAtribuicao(Atribuicao.builder()
+                .id(atribuicao.getId())
+                .nome(atribuicao.getNome())
+                .situacao(atribuicao.isSituacao())
+                .build());
+
+        return CartorioResponse.fromEntity(repository.save(cartorio));
+    }
+
+    @Transactional
+    public CartorioResponse removeAtribuicao(Integer id, String atribuicaoId) {
+        Cartorio cartorio = findOrFail(id);
+        AtribuicaoResponse atribuicao = atribuicaoService.findById(atribuicaoId);
+
+        cartorio.removerAtribuicao(Atribuicao.builder()
+                .id(atribuicao.getId())
+                .nome(atribuicao.getNome())
+                .situacao(atribuicao.isSituacao())
+                .build());
+
+        return CartorioResponse.fromEntity(repository.save(cartorio));
+    }
+
+    @Transactional(readOnly = true)
     public CartorioResponse findById(Integer id) {
         return CartorioResponse.fromEntity(findOrFail(id));
     }
 
+    @Transactional(readOnly = true)
     public Page<CartorioResponseMin> listAll(Pageable pageable) {
         Page<Cartorio> cartorios = repository.findAll(pageable);
         return new PageImpl<>(

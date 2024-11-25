@@ -80,6 +80,13 @@ public class Cartorio {
         }
     }
 
+    public void changeSituacao(Situacao situacao) {
+        if (situacao == null) {
+            throw new DomainException("Situação é obrigatória");
+        }
+        this.situacao = situacao;
+    }
+
     public void adicionarAtribuicao(Atribuicao atribuicao) {
         if (atribuicao == null) {
             throw new DomainException("Atribuição não pode ser nula");
